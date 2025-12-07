@@ -41,4 +41,21 @@ public class UserService {
                 .updatedAt(savedUser.getUpdatedAt())
                 .build();
     }
+
+    public UserResponse getUser(String userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return UserResponse.builder()
+                .id(user.getId())
+                .password(user.getPassword())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .role(String.valueOf(user.getRole()))
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+    }
 }
