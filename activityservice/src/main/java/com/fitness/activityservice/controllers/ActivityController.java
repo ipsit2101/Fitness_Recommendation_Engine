@@ -1,18 +1,17 @@
-package controllers;
+package com.fitness.activityservice.controllers;
 
-import dto.ActivityRequest;
-import dto.ActivityResponse;
-import lombok.AllArgsConstructor;
+import com.fitness.activityservice.dto.ActivityRequest;
+import com.fitness.activityservice.dto.ActivityResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import services.ActivityService;
+import com.fitness.activityservice.services.ActivityService;
 
 @RestController
 @RequestMapping("/api/activities")
-@AllArgsConstructor
 public class ActivityController {
 
+    @Autowired
     private ActivityService activityService;
 
     @PostMapping

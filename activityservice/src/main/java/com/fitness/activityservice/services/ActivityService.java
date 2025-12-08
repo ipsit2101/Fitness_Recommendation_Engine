@@ -1,10 +1,10 @@
-package services;
+package com.fitness.activityservice.services;
 
 import com.fitness.activityservice.ActivityRepository;
-import dto.ActivityRequest;
-import dto.ActivityResponse;
-import model.Activity;
-import model.ActivityType;
+import com.fitness.activityservice.dto.ActivityRequest;
+import com.fitness.activityservice.dto.ActivityResponse;
+import com.fitness.activityservice.model.Activity;
+import com.fitness.activityservice.model.ActivityType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,16 @@ public class ActivityService {
     @Autowired
     private ActivityRepository activityRepository;
 
+    @Autowired
+    private UserValidationService userValidationService;
+
     public ActivityResponse trackActivity(ActivityRequest activityRequest) {
+
+        boolean isValidUser = userValidationService.validateUser(activityRequest.getUserId());
+        if (!isValidUser) {
+            throw new RuntimeException("User " + activityRequest.getUserId() + " not found");
+        }
+
         Activity activity = Activity.builder()
                 .userId(activityRequest.getUserId())
                 .activityType(ActivityType.RUNNING)
