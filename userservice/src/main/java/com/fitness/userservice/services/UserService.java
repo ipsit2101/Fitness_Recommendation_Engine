@@ -5,6 +5,7 @@ import com.fitness.userservice.dto.RegisterRequest;
 import com.fitness.userservice.dto.UserResponse;
 import com.fitness.userservice.models.User;
 import com.fitness.userservice.models.UserRole;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -62,6 +64,10 @@ public class UserService {
     }
 
     public Boolean existsByUserId(String userId) {
-        return userRepository.existsById(userId);
+        boolean isValidUser = userRepository.existsById(userId);
+        if (isValidUser) {
+            log.info("----- User validation successful -----");
+        }
+        return isValidUser;
     }
 }

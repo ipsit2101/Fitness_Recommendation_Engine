@@ -5,10 +5,14 @@ import com.fitness.activityservice.dto.ActivityRequest;
 import com.fitness.activityservice.dto.ActivityResponse;
 import com.fitness.activityservice.model.Activity;
 import com.fitness.activityservice.model.ActivityType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ActivityService {
 
     @Autowired
@@ -16,6 +20,12 @@ public class ActivityService {
 
     @Autowired
     private UserValidationService userValidationService;
+
+    @Autowired
+    private KafkaTemplate<String, Activity> kafkaTemplate;
+
+    @Value("${kafka.topic.name}")
+    private String topicName;
 
     public ActivityResponse trackActivity(ActivityRequest activityRequest) {
 
@@ -26,7 +36,7 @@ public class ActivityService {
 
         Activity activity = Activity.builder()
                 .userId(activityRequest.getUserId())
-                .activityType(ActivityType.RUNNING)
+                .activityType(activityRequest.getActivityType())
                 .duration(activityRequest.getDuration())
                 .caloriesBurned(activityRequest.getCaloriesBurned())
                 .startTime(activityRequest.getStartTime())
@@ -34,6 +44,12 @@ public class ActivityService {
                 .build();
 
         Activity savedaActivity = activityRepository.save(activity);
+        try {
+            kafkaTemplate.send(topicName, savedaActivity.getUserId(), savedaActivity);
+            log.info("Activity details sent to topic {} for userId: {}", topicName, savedaActivity.getUserId());
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
 
         return ActivityResponse.builder()
                 .id(savedaActivity.getId())
