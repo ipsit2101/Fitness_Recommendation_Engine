@@ -24,6 +24,8 @@ public class ActivityListenerService {
         Recommendation recommendation = activityResponseProcessingService.generateRecommendation(activity);
         if (recommendation != null) {
             recommendationRepository.save(recommendation);
+            log.info("Recommendation saved for the user {} with activity-id {}", recommendation.getUserId(),
+                    recommendation.getActivityId());
         }
     }
 }

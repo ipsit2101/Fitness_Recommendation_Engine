@@ -43,6 +43,7 @@ public class ActivityService {
                 .build();
 
         Activity savedaActivity = activityRepository.save(activity);
+        log.info("Activity : {}", savedaActivity);
         try {
             kafkaTemplate.send(topicName, savedaActivity.getUserId(), savedaActivity);
             log.info("Activity details sent to topic {} for userId: {}", topicName, savedaActivity.getUserId());
@@ -51,7 +52,7 @@ public class ActivityService {
         }
 
         return ActivityResponse.builder()
-                .id(savedaActivity.getId())
+                .activityId(savedaActivity.getId())
                 .userId(savedaActivity.getUserId())
                 .activityType(savedaActivity.getActivityType())
                 .duration(savedaActivity.getDuration())

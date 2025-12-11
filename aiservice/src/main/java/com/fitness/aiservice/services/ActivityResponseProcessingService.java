@@ -59,7 +59,7 @@ public class ActivityResponseProcessingService {
             List<String> safetyInstructions = extractSafetyInstructions(contentNode.path("safety"));
 
             return Recommendation.builder()
-                    .activityId(activity.getActivityId())
+                    .activityId(activity.getId())
                     .userId(activity.getUserId())
                     .activityType(activity.getActivityType().toString())
                     .analysis(analysis)
@@ -72,7 +72,7 @@ public class ActivityResponseProcessingService {
         } catch (Exception e) {
             log.error(e.toString());
             return Recommendation.builder()
-                    .activityId(activity.getActivityId())
+                    .activityId(activity.getId())
                     .activityType(activity.getActivityType().toString())
                     .userId(activity.getUserId())
                     .analysis("Not able to generate detailed analysis")
