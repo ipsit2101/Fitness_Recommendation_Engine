@@ -22,7 +22,19 @@ public class UserService {
     public UserResponse register(RegisterRequest registerRequest) {
 
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new RuntimeException("Email " + registerRequest.getEmail() + " already exists");
+
+            User existingUser = userRepository.findByEmail(registerRequest.getEmail());
+            return UserResponse.builder()
+                    .id(existingUser.getId())
+                    .keycloakId(existingUser.getKeycloakId())
+                    .password(existingUser.getPassword())
+                    .email(existingUser.getEmail())
+                    .firstName(existingUser.getFirstName())
+                    .lastName(existingUser.getLastName())
+                    .role(String.valueOf(existingUser.getRole()))
+                    .createdAt(existingUser.getCreatedAt())
+                    .updatedAt(existingUser.getUpdatedAt())
+                    .build();
         }
 
         User user = User.builder()
@@ -53,6 +65,7 @@ public class UserService {
 
         return UserResponse.builder()
                 .id(user.getId())
+                .keycloakId(user.getKeycloakId())
                 .password(user.getPassword())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
@@ -64,7 +77,7 @@ public class UserService {
     }
 
     public Boolean existsByUserId(String userId) {
-        boolean isValidUser = userRepository.existsById(userId);
+        boolean isValidUser = userRepository.existsByKeycloakId(userId);
         if (isValidUser) {
             log.info("----- User validation successful -----");
         }
