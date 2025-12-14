@@ -7,8 +7,6 @@ import com.fitness.userservice.models.User;
 import com.fitness.userservice.models.UserRole;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
@@ -39,6 +37,7 @@ public class UserService {
 
         User user = User.builder()
                 .email(registerRequest.getEmail())
+                .keycloakId(registerRequest.getKeycloakId())
                 .firstName(registerRequest.getFirstName())
                 .lastName(registerRequest.getLastName())
                 .password(registerRequest.getPassword())
@@ -48,6 +47,7 @@ public class UserService {
 
         return UserResponse.builder()
                 .id(savedUser.getId())
+                .keycloakId(savedUser.getKeycloakId())
                 .password(savedUser.getPassword())
                 .email(savedUser.getEmail())
                 .firstName(savedUser.getFirstName())
@@ -60,20 +60,22 @@ public class UserService {
 
     public UserResponse getUser(String userId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (userRepository.existsByKeycloakId(userId)) {
 
-        return UserResponse.builder()
-                .id(user.getId())
-                .keycloakId(user.getKeycloakId())
-                .password(user.getPassword())
-                .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .role(String.valueOf(user.getRole()))
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
+            User user = userRepository.findByKeycloakId(userId);
+            return UserResponse.builder()
+                    .id(user.getId())
+                    .keycloakId(user.getKeycloakId())
+                    .password(user.getPassword())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .role(String.valueOf(user.getRole()))
+                    .createdAt(user.getCreatedAt())
+                    .updatedAt(user.getUpdatedAt())
+                    .build();
+
+        }else throw new RuntimeException("User not found");
     }
 
     public Boolean existsByUserId(String userId) {
