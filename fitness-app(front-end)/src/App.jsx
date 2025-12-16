@@ -11,7 +11,7 @@ import ActivityLists from './components/ActivityLists';
 const ActivitiesPage = () => {
   return (
     <Box component="section" sx={{ p: 2, border: '1px dashed grey' }}>
-      <ActivityForm />
+      <ActivityForm onActivityAdded = { () => window.location.reload() } />
       <ActivityLists />
     </Box>
   );
@@ -42,7 +42,7 @@ function App() {
         </Button>
         ) : (
          <Box component="section" sx={{ p: 2, border: '1px dashed grey' }}>
-          <Button variant="contained" onClick={() => {logIn();}}>
+          <Button variant="contained" onClick={logOut}>
             LOGOUT
           </Button>
           <Routes>
