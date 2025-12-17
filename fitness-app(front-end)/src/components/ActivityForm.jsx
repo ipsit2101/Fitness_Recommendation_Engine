@@ -15,7 +15,9 @@ const ActivityForm = ({ onActivityAdded }) => {
     e.preventDefault();
     try {
 
-      await addActivity(activity);
+      const response = await addActivity(activity);
+      console.log("API response:", response);
+      
       console.log('type of onActivityAdded: ', typeof(onActivityAdded));
       onActivityAdded();
       setActivity({

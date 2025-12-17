@@ -2,10 +2,13 @@ package com.fitness.activityservice.controllers;
 
 import com.fitness.activityservice.dto.ActivityRequest;
 import com.fitness.activityservice.dto.ActivityResponse;
+import com.fitness.activityservice.model.Activity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fitness.activityservice.services.ActivityService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/activities")
@@ -19,6 +22,11 @@ public class ActivityController {
     , @RequestHeader("X-User-ID") String userId) {
         activityRequest.setUserId(userId);
         return ResponseEntity.ok(activityService.trackActivity(activityRequest));
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<ActivityResponse>> getActivities(@RequestHeader("X-User-ID") String userId) {
+        return ResponseEntity.ok(activityService.getUserActivities(userId));
     }
 
     @GetMapping("/test")

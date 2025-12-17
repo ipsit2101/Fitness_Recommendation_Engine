@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Slf4j
 public class ActivityService {
@@ -62,5 +65,24 @@ public class ActivityService {
                 .createdAt(savedaActivity.getCreatedAt())
                 .updatedAt(savedaActivity.getUpdatedAt())
                 .build();
+    }
+
+    public List<ActivityResponse> getUserActivities(String userId) {
+
+        List<Activity> activities = activityRepository.findByUserId(userId);
+        List<ActivityResponse> responseList = new ArrayList<>();
+        for (Activity activity : activities) {
+            responseList.add(
+                    ActivityResponse.builder()
+                            .activityId(activity.getId())
+                            .userId(activity.getUserId())
+                            .activityType(activity.getActivityType())
+                            .duration(activity.getDuration())
+                            .caloriesBurned(activity.getCaloriesBurned())
+                            .startTime(activity.getStartTime())
+                            .build()
+            );
+        }
+        return responseList;
     }
 }

@@ -1,5 +1,6 @@
 package com.fitness.aiservice.controllers;
 
+import com.fitness.aiservice.dto.ActivityRecommendationDTO;
 import com.fitness.aiservice.models.Recommendation;
 import com.fitness.aiservice.services.RecommendationService;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +22,12 @@ public class RecommendationController {
     private RecommendationService recommendationService;
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Recommendation>> getUserRecommendation(@PathVariable String userId) {
+    public ResponseEntity<List<ActivityRecommendationDTO>> getUserRecommendation(@PathVariable String userId) {
         return ResponseEntity.ok(recommendationService.getUserRecommendations(userId));
     }
 
     @GetMapping("/activity/{activityId}")
-    public ResponseEntity<Recommendation> getActivityRecommendation(@PathVariable String activityId) {
+    public ResponseEntity<ActivityRecommendationDTO> getActivityRecommendation(@PathVariable String activityId) {
         return ResponseEntity.ok(recommendationService.getActivityRecommendations(activityId));
     }
 }

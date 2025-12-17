@@ -5,10 +5,10 @@ const API_URL = 'http://localhost:8080/api';
 const api = axios.create({
   baseURL: API_URL
 });
+const token = localStorage.getItem('token');
+const userId = localStorage.getItem('userId');
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId');
     if (token) {    
         config.headers.Authorization = `Bearer ${JSON.parse(token)}`;    
     }
@@ -18,6 +18,6 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export const getActivities = () => api.get('/activities');
+export const getActivities = () => api.get('/activities/user');
 export const addActivity = (activity) => api.post('/activities', activity);
-export const getActivivtyDetails = (id) => api.get(`/recommendations/activity/${id}`);
+export const getActivityDetails = (id) => api.get(`/recommendations/activity/${id}`);

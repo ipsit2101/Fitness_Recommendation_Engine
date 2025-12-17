@@ -1,7 +1,7 @@
 import { Box, Button } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import { BrowserRouter as Router, Navigate,Route, Routes, useLocation } from 'react-router'
-import { setCredentials } from './store/authSlice';
+import { logout, setCredentials } from './store/authSlice';
 import { useDispatch } from 'react-redux';
 import { AuthContext } from 'react-oauth2-code-pkce';
 import ActivityDetails from './components/ActivityDetails';
@@ -45,10 +45,16 @@ function App() {
           <Button variant="contained" onClick={logOut}>
             LOGOUT
           </Button>
+          <Button variant="contained" onClick={() => {
+            dispatch(logout());
+            logOut();
+          }}>
+            SIGN OUT
+          </Button>
           <Routes>
             <Route path="/activities" element={<ActivitiesPage />} />
             <Route path="activities/:id" element={<ActivityDetails />} />
-            <Route path="/" element={token ? <Navigate to="/activities" replace />
+            <Route path="/" element={localStorage.getItem('token') ? <Navigate to="/activities" replace />
                 : <div>
                   Welcome! Please log in.
                 </div>} />
