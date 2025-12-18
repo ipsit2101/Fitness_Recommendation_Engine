@@ -46,7 +46,7 @@ public class ActivityService {
                 .build();
 
         Activity savedaActivity = activityRepository.save(activity);
-        log.info("Activity : {}", savedaActivity);
+        log.info("Activity saved for the user {} : {}",activityRequest.getUserId(), savedaActivity);
         try {
             kafkaTemplate.send(topicName, savedaActivity.getUserId(), savedaActivity);
             log.info("Activity details sent to topic {} for userId: {}", topicName, savedaActivity.getUserId());
@@ -69,6 +69,7 @@ public class ActivityService {
 
     public List<ActivityResponse> getUserActivities(String userId) {
 
+        log.info("Fetching activity details of the user: {}", userId);
         List<Activity> activities = activityRepository.findByUserId(userId);
         List<ActivityResponse> responseList = new ArrayList<>();
         for (Activity activity : activities) {

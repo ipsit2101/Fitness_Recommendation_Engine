@@ -5,7 +5,7 @@ import { addActivity } from '../service/api';
 const ActivityForm = ({ onActivityAdded }) => {
 
   const [activity, setActivity] = useState({
-    activityType: "RUNNING",
+    activityType: '',
     duration: '',
     caloriesBurned: '',
     additionalMetrics: {}
@@ -14,20 +14,33 @@ const ActivityForm = ({ onActivityAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-
+      console.log("Submitting activity:", activity);
       const response = await addActivity(activity);
       console.log("API response:", response);
       
       console.log('type of onActivityAdded: ', typeof(onActivityAdded));
       onActivityAdded();
       setActivity({
-        activityType: "RUNNING",
+        activityType: '',
         duration: '',
         caloriesBurned: '',
         additionalMetrics: {}
       });
     } catch (error) {
       console.error('Error:', error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Error Status:', error.response.status);
+        console.error('Error Data:', error.response.data); // This is crucial for details
+        console.error('Error Headers:', error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('No response received:', error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Request setup error:', error.message);
+      }
     }
   }
 
@@ -39,7 +52,7 @@ const ActivityForm = ({ onActivityAdded }) => {
           value={activity.activityType}              
           onChange={(e) => {setActivity({...activity, activityType: e.target.value})}}
         >
-          <MenuItem value={"RUNING"}>Running</MenuItem>
+          <MenuItem value={"RUNNING"}>Running</MenuItem>
           <MenuItem value={"WALKING"}>Walking</MenuItem>
           <MenuItem value={"CYCLING"}>Cycling</MenuItem>
         </Select>

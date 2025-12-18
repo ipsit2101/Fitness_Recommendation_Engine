@@ -7,10 +7,11 @@ import { AuthContext } from 'react-oauth2-code-pkce';
 import ActivityDetails from './components/ActivityDetails';
 import ActivityForm from './components/ActivityForm';
 import ActivityLists from './components/ActivityLists';
+import Login from './components/LoginPage';
 
 const ActivitiesPage = () => {
   return (
-    <Box component="section" sx={{ p: 2, border: '1px dashed grey' }}>
+    <Box component="section" sx={{ p: 2}}>
       <ActivityForm onActivityAdded = { () => window.location.reload() } />
       <ActivityLists />
     </Box>
@@ -37,24 +38,19 @@ function App() {
     <>
       <Router>
         {!token ? (
-        <Button variant="contained" onClick={() => {logIn();}}>
-          LOGIN
-        </Button>
+          <Login onLogin={() => {logIn()}} />
         ) : (
-         <Box component="section" sx={{ p: 2, border: '1px dashed grey' }}>
+         <Box component="section" sx={{ p: 2}}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Button variant="contained" onClick={logOut}>
             LOGOUT
           </Button>
-          <Button variant="contained" onClick={() => {
-            dispatch(logout());
-            logOut();
-          }}>
-            SIGN OUT
-          </Button>
+        </Box>
+        
           <Routes>
             <Route path="/activities" element={<ActivitiesPage />} />
             <Route path="activities/:id" element={<ActivityDetails />} />
-            <Route path="/" element={localStorage.getItem('token') ? <Navigate to="/activities" replace />
+            <Route path="/" element={ token ? <Navigate to="/activities" replace />
                 : <div>
                   Welcome! Please log in.
                 </div>} />

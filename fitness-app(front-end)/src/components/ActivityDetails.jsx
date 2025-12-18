@@ -2,6 +2,7 @@ import { Box, Card, CardContent, Divider, Typography } from '@mui/material'
 import React, { act, useEffect, useState } from 'react'
 import { useParams } from 'react-router';
 import { getActivityDetails } from '../service/api';
+import NoRecommendations from './NoRecommendations';
 
 const ActivityDetails = () => {
 
@@ -26,7 +27,7 @@ const ActivityDetails = () => {
   }, [id]);
 
   if (!activity) {
-    return <Typography>Loading...</Typography>
+    return <NoRecommendations />;
   }
 
   return (
