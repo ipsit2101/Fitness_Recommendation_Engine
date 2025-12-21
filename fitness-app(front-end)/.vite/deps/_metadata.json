@@ -1,0 +1,88 @@
+{
+  "hash": "a4d2c543",
+  "configHash": "97e38dc6",
+  "lockfileHash": "ab9482a8",
+  "browserHash": "9c7488bd",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "2fac8e1d",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "6618044f",
+      "needsInterop": true
+    },
+    "react-redux": {
+      "src": "../../node_modules/react-redux/dist/react-redux.mjs",
+      "file": "react-redux.js",
+      "fileHash": "0ff96c56",
+      "needsInterop": false
+    },
+    "react-oauth2-code-pkce": {
+      "src": "../../node_modules/react-oauth2-code-pkce/dist/index.js",
+      "file": "react-oauth2-code-pkce.js",
+      "fileHash": "5c6e9bd9",
+      "needsInterop": true
+    },
+    "@reduxjs/toolkit": {
+      "src": "../../node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs",
+      "file": "@reduxjs_toolkit.js",
+      "fileHash": "27569c20",
+      "needsInterop": false
+    },
+    "@mui/material": {
+      "src": "../../node_modules/@mui/material/esm/index.js",
+      "file": "@mui_material.js",
+      "fileHash": "3efb12dd",
+      "needsInterop": false
+    },
+    "react-router": {
+      "src": "../../node_modules/react-router/dist/development/index.mjs",
+      "file": "react-router.js",
+      "fileHash": "075d83f3",
+      "needsInterop": false
+    },
+    "@mui/icons-material/LockOutlined": {
+      "src": "../../node_modules/@mui/icons-material/esm/LockOutlined.js",
+      "file": "@mui_icons-material_LockOutlined.js",
+      "fileHash": "8723c769",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "7e5ec5d7",
+      "needsInterop": false
+    },
+    "@mui/icons-material/InsightsOutlined": {
+      "src": "../../node_modules/@mui/icons-material/esm/InsightsOutlined.js",
+      "file": "@mui_icons-material_InsightsOutlined.js",
+      "fileHash": "0620c6f3",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-R3E4LXVO": {
+      "file": "chunk-R3E4LXVO.js"
+    },
+    "chunk-C6WWHQR7": {
+      "file": "chunk-C6WWHQR7.js"
+    },
+    "chunk-NPHRCV6F": {
+      "file": "chunk-NPHRCV6F.js"
+    },
+    "chunk-JBU6HCGV": {
+      "file": "chunk-JBU6HCGV.js"
+    },
+    "chunk-P6RTVJOB": {
+      "file": "chunk-P6RTVJOB.js"
+    },
+    "chunk-G3PMV62Z": {
+      "file": "chunk-G3PMV62Z.js"
+    }
+  }
+}
