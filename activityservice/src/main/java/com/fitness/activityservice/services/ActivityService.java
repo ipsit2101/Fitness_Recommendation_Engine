@@ -95,7 +95,9 @@ public class ActivityService {
                             .activityType(activity.getActivityType())
                             .duration(activity.getDuration())
                             .caloriesBurned(activity.getCaloriesBurned())
+                            .additionalMetrics(activity.getAdditionalMetrics())
                             .startTime(activity.getStartTime())
+                            .createdAt(activity.getCreatedAt())
                             .build()
             );
         }

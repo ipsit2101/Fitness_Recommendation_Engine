@@ -1,6 +1,6 @@
 import { Box, Button } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
-import { BrowserRouter as Router, Navigate,Route, Routes, useLocation } from 'react-router'
+import { BrowserRouter as Router, Navigate,Route, Routes, useLocation, useNavigate } from 'react-router'
 import { logout, setCredentials } from './store/authSlice';
 import { useDispatch } from 'react-redux';
 import { AuthContext } from 'react-oauth2-code-pkce';
@@ -8,20 +8,15 @@ import ActivityDetails from './components/ActivityDetails';
 import ActivityForm from './components/ActivityForm';
 import ActivityLists from './components/ActivityLists';
 import Login from './components/LoginPage';
-
-const ActivitiesPage = () => {
-  return (
-    <Box component="section" sx={{ p: 2}}>
-      <ActivityForm onActivityAdded = { () => window.location.reload() } />
-      <ActivityLists />
-    </Box>
-  );
-}
+import ActivitiesPage from './components/ActivitiesPage';
+import { keycloakLogout } from './oauth2Config';
+import SignIn from './components/SignIn';
 
 function App() {
 
   const { token, tokenData, logIn, logOut,isAuthenticated } = useContext(AuthContext);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [authReady, setAuthReady] = useState(false);
 
   useEffect(() => {
@@ -34,31 +29,33 @@ function App() {
     }
   }, [token, tokenData, dispatch]);
 
+  const handleLogout = () => {
+    logOut();                  // Keycloak logout (REQUIRED)
+    dispatch(logout()); 
+    keycloakLogout();     // Redux state cleanup  
+  };
+
+
   return (
     <>
-      <Router>
         {!token ? (
           <Login onLogin={() => {logIn()}} />
         ) : (
-         <Box component="section" sx={{ p: 2}}>
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button variant="contained" onClick={logOut}>
-            LOGOUT
-          </Button>
-        </Box>
-        
+         <Box component="section" sx={{ p: 2, m: 2 }}>
+          {/* <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button variant="contained" onClick={handleLogout}>
+              LOGOUT
+            </Button>
+          </Box> */}
+          <SignIn logOut={logOut} handleLogout={handleLogout} />
           <Routes>
             <Route path="/activities" element={<ActivitiesPage />} />
             <Route path="activities/:id" element={<ActivityDetails />} />
-            <Route path="/" element={ token ? <Navigate to="/activities" replace />
-                : <div>
-                  Welcome! Please log in.
-                </div>} />
+            <Route path="/" element={<Navigate to="/activities" replace />} />
           </Routes>
         </Box>
         )
       }
-      </Router>
     </>
   )
 }

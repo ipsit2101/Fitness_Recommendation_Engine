@@ -17,11 +17,11 @@ spring:
   cache:
     type: redis
 
-logging:
-  level:
-    io.lettuce.core: DEBUG
-    org.springframework.cache: TRACE
-    org.springframework.data.redis: DEBUG
+#logging:
+#  level:
+#    io.lettuce.core: DEBUG
+#    org.springframework.cache: TRACE
+#    org.springframework.data.redis: DEBUG
 
 kafka:
   topic:

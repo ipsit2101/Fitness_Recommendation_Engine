@@ -38,9 +38,13 @@ public class RecommendationService {
     private ActivityRecommendationDTO toDTO(Recommendation response) {
         return ActivityRecommendationDTO.builder()
                 .id(response.getId())
+                .createdAt(response.getCreatedAt())
                 .activityId(response.getActivityId())
                 .activityType(response.getActivityType())
+                .duration(response.getDuration())
+                .caloriesBurned(response.getCaloriesBurned())
                 .userId(response.getUserId())
+                .activityMetrics(response.getMetrics())
                 .recommendation(
                         RecommendationDTO.builder()
                                 .analysis(response.getAnalysis())

@@ -37,7 +37,12 @@ const ActivityDetails = () => {
                     <Typography variant="h5" gutterBottom>Activity Details</Typography>
                     <Typography>Type: {activity.activityType}</Typography>
                     <Typography>Duration: {activity.duration} minutes</Typography>
-                    <Typography>Calories Burned: {activity.caloriesBurned}</Typography>
+                    <Typography>Calories Burned: {activity.caloriesBurned} kcal</Typography>
+                    <Typography>Height: {activity.activityMetrics.height ? activity.activityMetrics.height + " cm" : "Not Provided"}</Typography>
+                    <Typography>Weight: {activity.activityMetrics.weight ? activity.activityMetrics.weight + " kg" : "Not Provided"}</Typography>
+                    <Typography>Average Heart Rate: {activity.activityMetrics.avgHeartRate ? activity.activityMetrics.avgHeartRate + " bpm" : "Not Provided"}</Typography>
+                    <Typography>Distance (km): {activity.activityMetrics.distanceKm ? activity.activityMetrics.distanceKm + " km" : "Not Provided"}</Typography>
+                    <Typography>Location: {activity.activityMetrics.location ? activity.activityMetrics.location : "Not Provided"}</Typography>
                     <Typography>Date: {new Date(activity.createdAt).toLocaleString()}</Typography>
                 </CardContent>
             </Card>

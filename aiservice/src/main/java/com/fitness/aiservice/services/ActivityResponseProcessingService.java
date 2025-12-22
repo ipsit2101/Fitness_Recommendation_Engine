@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -61,7 +62,10 @@ public class ActivityResponseProcessingService {
             return Recommendation.builder()
                     .activityId(activity.getId())
                     .userId(activity.getUserId())
+                    .duration(activity.getDuration())
+                    .caloriesBurned(activity.getCaloriesBurned())
                     .activityType(activity.getActivityType().toString())
+                    .metrics(activity.getAdditionalMetrics())
                     .analysis(analysis)
                     .improvements(improvements)
                     .suggestions(suggestions)
@@ -75,6 +79,7 @@ public class ActivityResponseProcessingService {
                     .activityId(activity.getId())
                     .activityType(activity.getActivityType().toString())
                     .userId(activity.getUserId())
+                    .metrics(new HashMap<>())
                     .analysis("Not able to generate detailed analysis")
                     .improvements(Collections.singletonList("No improvements in this scope"))
                     .suggestions(Collections.singletonList("Continue with your current plan"))
@@ -152,7 +157,7 @@ public class ActivityResponseProcessingService {
 
     private String createActivityPrompt(Activity activity) {
         return String.format("""
-            Analyze this fitness activity and provide detailed recommendations in the following EXACT JSON format:
+            Analyze this fitness activity and additional metrics being provided based on locations. Provide detailed recommendations in the following EXACT JSON format:
             {
               "analysis": {
                 "overall": "Overall analysis here",
@@ -183,6 +188,11 @@ public class ActivityResponseProcessingService {
             Duration: %d minutes
             Calories Burned: %d
             Additional Metrics: %s
+            
+            Distance(if present) : in km
+            Average heart rate(if present) : in bpm
+            Weight(if present) : in kg
+            Height(if present) : in cm
             
             Provide detailed analysis focusing on performance, improvements, next workout suggestions, and safety guidelines.
             Ensure the response follows the EXACT JSON format shown above.

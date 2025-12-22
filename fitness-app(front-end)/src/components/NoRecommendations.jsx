@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import {
   Box,
   Typography,
@@ -6,8 +6,11 @@ import {
   Paper
 } from "@mui/material";
 import InsightsOutlinedIcon from "@mui/icons-material/InsightsOutlined";
+import { useNavigate } from "react-router";
 
 const NoRecommendations = ({ onActionClick }) => {
+
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -60,14 +63,14 @@ const NoRecommendations = ({ onActionClick }) => {
         <Button
           variant="contained"
           size="medium"
-          onClick={onActionClick}
+          onClick={() => navigate("/activities")}
           sx={{
             borderRadius: 3,
             px: 3,
             textTransform: "none"
           }}
         >
-          Add Your First Activity
+          Keep Adding Activities
         </Button>
       </Paper>
     </Box>

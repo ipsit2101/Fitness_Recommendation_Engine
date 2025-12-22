@@ -4,11 +4,8 @@ import {
   Button,
   Card,
   CardContent,
-  FormControl,
   Grid,
-  InputLabel,
   MenuItem,
-  Select,
   TextField,
   Typography
 } from "@mui/material";
@@ -16,7 +13,7 @@ import React, { useState } from "react";
 import { addActivity } from "../service/api";
 import { cities } from "../store/cities";
 
-const ActivityForm = ({ onActivityAdded }) => {
+const ActivityForm2 = ({ onActivityAdded }) => {
   const [activity, setActivity] = useState({
     activityType: "",
     duration: "",
@@ -31,19 +28,15 @@ const ActivityForm = ({ onActivityAdded }) => {
   });
 
   const cleanAdditionalMetrics = (metrics) => {
-    const cleanedMetrics = {};
-
-    Object.entries(metrics).forEach(([key, value]) => {
-      if (value !== "" && value !== null && value !== undefined) {
-        cleanedMetrics[key] = value;
-      }
+    const cleaned = {};
+    Object.entries(metrics).forEach(([k, v]) => {
+      if (v !== "" && v !== null && v !== undefined) cleaned[k] = v;
     });
-    return cleanedMetrics;
+    return cleaned;
   };
 
-
   const handleMetricChange = (key, value) => {
-    setActivity(prev => ({
+    setActivity((prev) => ({
       ...prev,
       additionalMetrics: {
         ...prev.additionalMetrics,
@@ -59,34 +52,47 @@ const ActivityForm = ({ onActivityAdded }) => {
       additionalMetrics: cleanAdditionalMetrics(activity.additionalMetrics)
     };
     await addActivity(payload);
-    console.log("Submitting Activity:", payload);
     onActivityAdded();
   };
 
   return (
     <Card
       sx={{
-        maxWidth: 820,
+        maxWidth: 900,
         mx: "auto",
         mt: 4,
-        borderRadius: 3,
-        boxShadow: 4
+        borderRadius: 2,
+        overflow: "hidden",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0 18px 45px rgba(0,0,0,0.18)"
+        }
       }}
     >
-      <CardContent>
-        <Typography variant="h5" fontWeight={600} mb={0.5}>
+      {/* Gradient Header */}
+      <Box
+        sx={{
+          px: 3,
+          py: 2,
+          background: "linear-gradient(90deg, #2563eb, #16a34a)",
+          color: "#fff"
+        }}
+      >
+        <Typography variant="h5" fontWeight={700}>
           Add Activity
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={3}>
-          Track your workout and additional fitness metrics
+        <Typography variant="body2" sx={{ opacity: 0.9 }}>
+          Track your workout and fitness metrics
         </Typography>
+      </Box>
 
+      <CardContent sx={{ p: 4 }}>
         <Box component="form" onSubmit={handleSubmit}>
-
-          {/* ===== ROW 1 ===== */}
-          <Grid container spacing={2} mb={2}>
-            {/* Activity Type – wider */}
-            <Box sx={{ width: "30%" }}>
+          {/* BASIC INFO */}
+          <Grid container spacing={2} mb={3}>
+            <Grid item xs={12} md={4}>
               <TextField
                 select
                 fullWidth
@@ -96,28 +102,19 @@ const ActivityForm = ({ onActivityAdded }) => {
                   setActivity({ ...activity, activityType: e.target.value })
                 }
               >
-                <MenuItem value="RUNNING">Running</MenuItem>
-                <MenuItem value="WALKING">Walking</MenuItem>
-                <MenuItem value="CYCLING">Cycling</MenuItem>
-                <MenuItem value="SWIMMING">Swimming</MenuItem>
-                <MenuItem value="YOGA">Yoga</MenuItem>
-                <MenuItem value="WEIGHT_TRAINING">Weight Training</MenuItem>
-                <MenuItem value="STRETCHING">Stretching</MenuItem>
-                <MenuItem value="CROSSFIT">CrossFit</MenuItem>
-                <MenuItem value="BOXING">Boxing</MenuItem>
-                <MenuItem value="MEDITATION">Meditation</MenuItem>
-                <MenuItem value="HIKING">Hiking</MenuItem>
-                <MenuItem value="CARDIO">Cardio</MenuItem>
-                <MenuItem value="DANCE">Dance</MenuItem>
-                <MenuItem value="PILATES">Pilates</MenuItem>
-                <MenuItem value="SKIING">Skiing</MenuItem>
-                <MenuItem value="OTHERS">Others</MenuItem>
+                {[
+                  "RUNNING","WALKING","CYCLING","SWIMMING","YOGA",
+                  "WEIGHT_TRAINING","STRETCHING","CROSSFIT","BOXING",
+                  "MEDITATION","HIKING","CARDIO","DANCE","PILATES","SKIING","OTHERS"
+                ].map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type.replace("_", " ")}
+                  </MenuItem>
+                ))}
               </TextField>
-            </Box>
+            </Grid>
 
-
-            {/* Duration */}
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <TextField
                 label="Duration (min)"
                 type="number"
@@ -129,8 +126,7 @@ const ActivityForm = ({ onActivityAdded }) => {
               />
             </Grid>
 
-            {/* Calories */}
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <TextField
                 label="Calories Burned"
                 type="number"
@@ -143,12 +139,17 @@ const ActivityForm = ({ onActivityAdded }) => {
             </Grid>
           </Grid>
 
-          {/* ===== ADDITIONAL METRICS ===== */}
-          <Typography variant="subtitle1" fontWeight={600} mb={1}>
+          {/* ADDITIONAL METRICS */}
+          <Typography
+            variant="subtitle1"
+            fontWeight={700}
+            mb={1}
+            color="primary"
+          >
             Additional Metrics
           </Typography>
 
-          <Grid container spacing={2} mb={3}>
+          <Grid container spacing={2} mb={4}>
             <Grid item xs={12} md={4}>
               <TextField
                 label="Height (cm)"
@@ -197,32 +198,43 @@ const ActivityForm = ({ onActivityAdded }) => {
               />
             </Grid>
 
-            {/* Location – wider */}
-            <Autocomplete
-              sx={{width: "30%"}}
-              options={cities}
-              value={activity.additionalMetrics.location || null}
-              onChange={(event, newValue) =>
-                handleMetricChange("location", newValue)
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Location (City)"
-                  placeholder="Search city"
-                  fullWidth
-                />
-              )}
-            />
-
+            <Grid item xs={12} md={6}>
+              <Autocomplete
+                options={cities}
+                value={activity.additionalMetrics.location || null}
+                onChange={(e, value) =>
+                  handleMetricChange("location", value)
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Location (City)"
+                    placeholder="Search city"
+                    fullWidth
+                  />
+                )}
+              />
+            </Grid>
           </Grid>
 
+          {/* SUBMIT */}
           <Button
             type="submit"
-            variant="contained"
-            size="large"
             fullWidth
-            sx={{ py: 1.3, fontWeight: 600 }}
+            sx={{
+              py: 1.4,
+              fontWeight: 700,
+              borderRadius: 3,
+              color: "#fff",
+              background: "linear-gradient(90deg, #2563eb, #16a34a)",
+              boxShadow: "0 10px 25px rgba(37,99,235,0.35)",
+              transition: "all 0.3s ease",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow: "0 16px 35px rgba(22,163,74,0.45)",
+                background: "linear-gradient(90deg, #1d4ed8, #15803d)"
+              }
+            }}
           >
             ADD ACTIVITY
           </Button>
@@ -232,4 +244,4 @@ const ActivityForm = ({ onActivityAdded }) => {
   );
 };
 
-export default ActivityForm;
+export default ActivityForm2;

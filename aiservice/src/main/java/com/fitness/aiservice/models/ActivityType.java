@@ -10,5 +10,12 @@ public enum ActivityType {
     YOGA,
     CARDIO,
     STRETCHING,
+    CROSSFIT,
+    BOXING,
+    MEDITATION,
+    HIKING,
+    PILATES,
+    DANCE,
+    SKIING,
     OTHERS
 }
