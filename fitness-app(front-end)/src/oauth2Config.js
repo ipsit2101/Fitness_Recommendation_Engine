@@ -3,12 +3,13 @@ export const authConfig = {
   authorizationEndpoint: 'http://localhost:8181/realms/fitness-app/protocol/openid-connect/auth',
   tokenEndpoint: 'http://localhost:8181/realms/fitness-app/protocol/openid-connect/token',
   redirectUri: 'http://localhost:5173',
+  autoLogin: false,
   scope: 'openid profile email',
-  onRefreshTokenExpire: (event) => {
+  onRefreshTokenExpire: () => {
     const userLoggedOut = localStorage.getItem('USER_LOGGED_OUT');
-    if (!userLoggedOut) {
-      // If the logout was not intentional, reload to trigger re-authentication
-      event.logIn();
+    if (userLoggedOut === 'true') {
+      // If the user has intentionally logged out, do not attempt to refresh the token
+      return;
     }
   },
 }

@@ -7,11 +7,23 @@ import {
   Grid,
   MenuItem,
   TextField,
-  Typography
+  Typography,
+  InputAdornment,
 } from "@mui/material";
 import React, { useState } from "react";
 import { addActivity } from "../service/api";
 import { cities } from "../store/cities";
+
+// Icons
+import FitnessCenter from "@mui/icons-material/FitnessCenter";
+import TimerOutlined from "@mui/icons-material/TimerOutlined";
+import LocalFireDepartmentOutlined from "@mui/icons-material/LocalFireDepartmentOutlined";
+import Height from "@mui/icons-material/Height";
+import MonitorWeight from "@mui/icons-material/MonitorWeight";
+import Favorite from "@mui/icons-material/Favorite";
+import Straighten from "@mui/icons-material/Straighten";
+import LocationOn from "@mui/icons-material/LocationOn";
+import InsightsOutlined from "@mui/icons-material/InsightsOutlined";
 
 const ActivityForm2 = ({ onActivityAdded }) => {
   const [activity, setActivity] = useState({
@@ -23,8 +35,8 @@ const ActivityForm2 = ({ onActivityAdded }) => {
       weight: "",
       avgHeartRate: "",
       distanceKm: "",
-      location: ""
-    }
+      location: "",
+    },
   });
 
   const cleanAdditionalMetrics = (metrics) => {
@@ -40,8 +52,8 @@ const ActivityForm2 = ({ onActivityAdded }) => {
       ...prev,
       additionalMetrics: {
         ...prev.additionalMetrics,
-        [key]: value
-      }
+        [key]: value,
+      },
     }));
   };
 
@@ -49,7 +61,7 @@ const ActivityForm2 = ({ onActivityAdded }) => {
     e.preventDefault();
     const payload = {
       ...activity,
-      additionalMetrics: cleanAdditionalMetrics(activity.additionalMetrics)
+      additionalMetrics: cleanAdditionalMetrics(activity.additionalMetrics),
     };
     await addActivity(payload);
     onActivityAdded();
@@ -61,23 +73,23 @@ const ActivityForm2 = ({ onActivityAdded }) => {
         maxWidth: 900,
         mx: "auto",
         mt: 4,
-        borderRadius: 2,
+        borderRadius: 3,
         overflow: "hidden",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
+        boxShadow: "0 12px 35px rgba(0,0,0,0.15)",
         transition: "all 0.3s ease",
         "&:hover": {
           transform: "translateY(-4px)",
-          boxShadow: "0 18px 45px rgba(0,0,0,0.18)"
-        }
+          boxShadow: "0 20px 50px rgba(0,0,0,0.2)",
+        },
       }}
     >
-      {/* Gradient Header */}
+      {/* Header */}
       <Box
         sx={{
           px: 3,
-          py: 2,
+          py: 2.5,
           background: "linear-gradient(90deg, #2563eb, #16a34a)",
-          color: "#fff"
+          color: "#fff",
         }}
       >
         <Typography variant="h5" fontWeight={700}>
@@ -92,7 +104,7 @@ const ActivityForm2 = ({ onActivityAdded }) => {
         <Box component="form" onSubmit={handleSubmit}>
           {/* BASIC INFO */}
           <Grid container spacing={2} mb={3}>
-            <Grid item xs={12} md={4}>
+            <Box sx={{width: "30%"}}>
               <TextField
                 select
                 fullWidth
@@ -101,18 +113,38 @@ const ActivityForm2 = ({ onActivityAdded }) => {
                 onChange={(e) =>
                   setActivity({ ...activity, activityType: e.target.value })
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FitnessCenter color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
               >
                 {[
-                  "RUNNING","WALKING","CYCLING","SWIMMING","YOGA",
-                  "WEIGHT_TRAINING","STRETCHING","CROSSFIT","BOXING",
-                  "MEDITATION","HIKING","CARDIO","DANCE","PILATES","SKIING","OTHERS"
+                  "RUNNING",
+                  "WALKING",
+                  "CYCLING",
+                  "SWIMMING",
+                  "YOGA",
+                  "WEIGHT_TRAINING",
+                  "STRETCHING",
+                  "CROSSFIT",
+                  "BOXING",
+                  "MEDITATION",
+                  "HIKING",
+                  "CARDIO",
+                  "DANCE",
+                  "PILATES",
+                  "SKIING",
+                  "OTHERS",
                 ].map((type) => (
                   <MenuItem key={type} value={type}>
                     {type.replace("_", " ")}
                   </MenuItem>
                 ))}
               </TextField>
-            </Grid>
+            </Box>
 
             <Grid item xs={12} md={4}>
               <TextField
@@ -123,6 +155,13 @@ const ActivityForm2 = ({ onActivityAdded }) => {
                 onChange={(e) =>
                   setActivity({ ...activity, duration: e.target.value })
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <TimerOutlined sx={{ color: "#16a34a" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
 
@@ -133,22 +172,31 @@ const ActivityForm2 = ({ onActivityAdded }) => {
                 fullWidth
                 value={activity.caloriesBurned}
                 onChange={(e) =>
-                  setActivity({ ...activity, caloriesBurned: e.target.value })
+                  setActivity({
+                    ...activity,
+                    caloriesBurned: e.target.value,
+                  })
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LocalFireDepartmentOutlined sx={{ color: "#ef4444" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
           </Grid>
 
-          {/* ADDITIONAL METRICS */}
-          <Typography
-            variant="subtitle1"
-            fontWeight={700}
-            mb={1}
-            color="primary"
-          >
-            Additional Metrics
-          </Typography>
+          {/* ADDITIONAL METRICS HEADER */}
+          <Box display="flex" alignItems="center" gap={1} mb={2}>
+            <InsightsOutlined color="primary" />
+            <Typography variant="subtitle1" fontWeight={700} color="primary">
+              Additional Metrics
+            </Typography>
+          </Box>
 
+          {/* ADDITIONAL METRICS */}
           <Grid container spacing={2} mb={4}>
             <Grid item xs={12} md={4}>
               <TextField
@@ -159,6 +207,13 @@ const ActivityForm2 = ({ onActivityAdded }) => {
                 onChange={(e) =>
                   handleMetricChange("height", e.target.value)
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Height sx={{ color: "#0ea5e9" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
 
@@ -171,6 +226,13 @@ const ActivityForm2 = ({ onActivityAdded }) => {
                 onChange={(e) =>
                   handleMetricChange("weight", e.target.value)
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <MonitorWeight sx={{ color: "#f59e0b" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
 
@@ -183,6 +245,13 @@ const ActivityForm2 = ({ onActivityAdded }) => {
                 onChange={(e) =>
                   handleMetricChange("avgHeartRate", e.target.value)
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Favorite sx={{ color: "#ec4899" }} />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
 
@@ -195,10 +264,17 @@ const ActivityForm2 = ({ onActivityAdded }) => {
                 onChange={(e) =>
                   handleMetricChange("distanceKm", e.target.value)
                 }
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Straighten color="secondary" />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Box sx={{width: "30%"}}>
               <Autocomplete
                 options={cities}
                 value={activity.additionalMetrics.location || null}
@@ -211,10 +287,21 @@ const ActivityForm2 = ({ onActivityAdded }) => {
                     label="Location (City)"
                     placeholder="Search city"
                     fullWidth
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <>
+                          <InputAdornment position="start">
+                            <LocationOn color="error" />
+                          </InputAdornment>
+                          {params.InputProps.startAdornment}
+                        </>
+                      ),
+                    }}
                   />
                 )}
               />
-            </Grid>
+            </Box>
           </Grid>
 
           {/* SUBMIT */}
@@ -232,8 +319,8 @@ const ActivityForm2 = ({ onActivityAdded }) => {
               "&:hover": {
                 transform: "translateY(-2px)",
                 boxShadow: "0 16px 35px rgba(22,163,74,0.45)",
-                background: "linear-gradient(90deg, #1d4ed8, #15803d)"
-              }
+                background: "linear-gradient(90deg, #1d4ed8, #15803d)",
+              },
             }}
           >
             ADD ACTIVITY

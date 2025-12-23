@@ -1,83 +1,168 @@
-import { Box, Card, CardContent, Grid, Typography } from '@mui/material';
-import React, { use, useEffect, useState } from 'react'
-import { getActivities } from '../service/api';
-import { useNavigate } from 'react-router';
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+  Stack,
+} from "@mui/material";
+import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
+import LocalFireDepartmentOutlinedIcon from "@mui/icons-material/LocalFireDepartmentOutlined";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import React, { useEffect, useState } from "react";
+import { getActivities } from "../service/api";
+import { useNavigate } from "react-router";
+import { activityIconMap } from "../service/activityTypeMap";
 
 const ActivityLists = () => {
-
   const [activities, setActivities] = useState([]);
-  const navigate = useNavigate(); 
-
-  const fetchActivities = async () => {
-    try {
-      const response = await getActivities();
-      setActivities(response.data);
-    } catch (error) {
-      console.error('Error fetching activities:', error);
-    }
-  }
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const response = await getActivities();
+        setActivities(response.data);
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+      }
+    };
     fetchActivities();
   }, []);
 
   return (
-    <Grid container spacing={3} justifyContent="center">
-      {activities.map((activity) => (
-        <Grid item xs={12} sm={6} md={4} key={activity.activityId}>
-          <Card
-            sx={{
-              height: "100%",
-              borderRadius: 1,
-              position: "relative",
-              overflow: "hidden",
-              boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-              transition: "all 0.3s ease",
-              cursor: "pointer",
+    <Grid container spacing={4} justifyContent="center">
+      {activities.map((activity) => {
+        const activityConfig =
+          activityIconMap[activity.activityType] ||
+          activityIconMap.OTHERS;
 
-              "&:hover": {
-                transform: "translateY(-6px)",
-                boxShadow: "0 16px 40px rgba(0,0,0,0.15)",
+        const ActivityIcon = activityConfig.icon;
 
-                "& .activity-title": {
-                  color: "primary.main",
-                  transform: "scale(1.05)",
-                },
-
-                "& .accent-bar": {
-                  width: "100%",
-                },
-              },
-            }}
-
-            onClick={() => navigate(`/activities/${activity.activityId}`)}  
-          >
-            {/* Accent Bar */}
-            <Box
+        return (
+          <Grid item xs={12} sm={6} md={4} key={activity.activityId}>
+            <Card
+              onClick={() =>
+                navigate(`/activities/${activity.activityId}`)
+              }
               sx={{
-                height: 6,
-                background: "linear-gradient(90deg, #2563eb, #16a34a)",
+                height: "100%",
+                borderRadius: 2,
+                cursor: "pointer",
+                position: "relative",
+                overflow: "hidden",
+                boxShadow: "0 12px 30px rgba(0,0,0,0.1)",
+                transition: "all 0.35s ease",
+
+                "&:hover": {
+                  transform: "translateY(-8px)",
+                  boxShadow: "0 22px 50px rgba(0,0,0,0.18)",
+                },
               }}
-            />
+            >
+              {/* Gradient Accent Bar */}
+              <Box
+                sx={{
+                  height: 16,
+                  background:
+                    "linear-gradient(90deg, #2563eb, #16a34a)",
+                }}
+              />
 
-            <CardContent>
-              <Typography variant="h6">
-                {activity.activityType}
-              </Typography>
+              <CardContent sx={{ p: 3 }}>
+                {/* Header */}
+                <Stack
+                  direction="row"
+                  spacing={1.5}
+                  alignItems="center"
+                  mb={2}
+                >
+                  <ActivityIcon
+                    sx={{
+                      fontSize: 28,
+                      color: activityConfig.color,
+                    }}
+                  />
 
-              <Typography variant="body2" color="text.secondary">
-                Duration: {activity.duration} minutes
-              </Typography>
+                  <Typography
+                    variant="h6"
+                    fontWeight={700}
+                    sx={{
+                      textTransform: "capitalize",
+                      background:
+                        "linear-gradient(90deg, #2563eb, #16a34a)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    {activity.activityType}
+                  </Typography>
+                </Stack>
 
-              <Typography variant="body2" color="text.secondary">
-                Calories Burned: {activity.caloriesBurned} kcal
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
+                {/* Metrics */}
+                <Stack spacing={1.2}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
+                    <TimerOutlinedIcon
+                      sx={{ fontSize: 20, color: "#16a34a" }}
+                    />
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      {activity.duration} minutes
+                    </Typography>
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                  >
+                    <LocalFireDepartmentOutlinedIcon
+                      sx={{ fontSize: 20, color: "#ef4444" }}
+                    />
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      {activity.caloriesBurned} kcal burned
+                    </Typography>
+                  </Stack>
+                </Stack>
+
+                {/* Footer */}
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  justifyContent="flex-end"
+                  mt={3}
+                >
+                  <Typography
+                    variant="caption"
+                    color="primary"
+                    fontWeight={600}
+                  >
+                    View Details
+                  </Typography>
+                  <ArrowForwardIosIcon
+                    sx={{
+                      fontSize: 14,
+                      color: "primary.main",
+                    }}
+                  />
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+        );
+      })}
     </Grid>
   );
-}
+};
 
-export default ActivityLists
+export default ActivityLists;

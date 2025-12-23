@@ -19,7 +19,6 @@ public class UserServiceClient {
     @Autowired
     private WebClient userServiceWebClient;
 
-
     String userServiceBaseUrl = "http://USER-SERVICE";
 
     public Mono<Boolean> validateUser(String userId) {

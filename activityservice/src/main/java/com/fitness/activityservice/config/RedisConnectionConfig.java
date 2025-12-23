@@ -20,7 +20,6 @@ import java.util.Map;
 @Configuration
 public class RedisConnectionConfig {
 
-
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
 
@@ -32,15 +31,13 @@ public class RedisConnectionConfig {
         RedisSerializer<Object> serializer =
                 new GenericJackson2JsonRedisSerializer(mapper);
 
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
+        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration // JSON Serializer
                 .defaultCacheConfig()
                 .disableCachingNullValues()
                 .serializeKeysWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
                                 new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(  //JSON Serializer
-                        serializer
-                ));
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
 
         Map<String, RedisCacheConfiguration> cacheConfigurationMap = new HashMap<>();
         // TTL 10 minutes for user-activities

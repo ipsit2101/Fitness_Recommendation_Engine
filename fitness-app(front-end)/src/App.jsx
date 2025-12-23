@@ -26,6 +26,7 @@ function App() {
         user: tokenData
       }));
       setAuthReady(true);
+      localStorage.removeItem('USER_LOGGED_OUT');
     }
   }, [token, tokenData, dispatch]);
 
@@ -35,23 +36,17 @@ function App() {
     keycloakLogout();     // Redux state cleanup  
   };
 
-
   return (
     <>
         {!token ? (
           <Login onLogin={() => {logIn()}} />
         ) : (
          <Box component="section" sx={{ p: 2, m: 2 }}>
-          {/* <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button variant="contained" onClick={handleLogout}>
-              LOGOUT
-            </Button>
-          </Box> */}
           <SignIn logOut={logOut} handleLogout={handleLogout} />
           <Routes>
             <Route path="/activities" element={<ActivitiesPage />} />
             <Route path="activities/:id" element={<ActivityDetails />} />
-            <Route path="/" element={<Navigate to="/activities" replace />} />
+            <Route path="/" element={!token ? <Navigate to="/" /> : <Navigate to="/activities" replace />} />
           </Routes>
         </Box>
         )
