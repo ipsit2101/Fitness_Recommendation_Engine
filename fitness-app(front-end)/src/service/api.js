@@ -5,10 +5,11 @@ const API_URL = 'http://localhost:8080/api';
 const api = axios.create({
   baseURL: API_URL
 });
-const token = localStorage.getItem('token');
-const userId = localStorage.getItem('userId');
 
 api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
     if (token) {    
         config.headers.Authorization = `Bearer ${JSON.parse(token)}`;    
     }

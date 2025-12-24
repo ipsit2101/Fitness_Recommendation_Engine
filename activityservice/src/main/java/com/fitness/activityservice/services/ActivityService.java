@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,11 @@ public class ActivityService {
     @Value("${kafka.topic.name}")
     private String topicName;
 
+    @Transactional
     @CacheEvict(
             value = "user-activities",
-            key = "#activityRequest.userId"
+            key = "#activityRequest.userId",
+            beforeInvocation = false
     )
     public ActivityResponse trackActivity(ActivityRequest activityRequest) {
 

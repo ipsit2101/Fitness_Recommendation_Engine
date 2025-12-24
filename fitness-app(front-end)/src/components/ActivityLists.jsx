@@ -9,26 +9,31 @@ import {
 import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
 import LocalFireDepartmentOutlinedIcon from "@mui/icons-material/LocalFireDepartmentOutlined";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getActivities } from "../service/api";
 import { useNavigate } from "react-router";
 import { activityIconMap } from "../service/activityTypeMap";
+import { useSelector } from "react-redux";
+import { AuthContext } from "react-oauth2-code-pkce";
 
 const ActivityLists = () => {
   const [activities, setActivities] = useState([]);
   const navigate = useNavigate();
+  const token = useSelector((state) => state.auth.token);
+  const {isAuthenticated} = useContext(AuthContext);
+
+  const fetchActivities = async () => {
+    try {
+      const response = await getActivities();
+      setActivities(response.data);
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        const response = await getActivities();
-        setActivities(response.data);
-      } catch (error) {
-        console.error("Error fetching activities:", error);
-      }
-    };
     fetchActivities();
-  }, []);
+  }, [token, isAuthenticated]);
 
   return (
     <Grid container spacing={4} justifyContent="center">
