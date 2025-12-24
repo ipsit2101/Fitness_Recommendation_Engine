@@ -11,4 +11,6 @@ public interface RecommendationRepository extends MongoRepository<Recommendation
     List<Recommendation> findRecommendationByUserId(String userId);
 
     Optional<Recommendation> findRecommendationByActivityId(String activityId);
+
+    void deleteRecommendationByActivityId(String activityId);
 }

@@ -8,23 +8,36 @@ spring:
     bootstrap-servers: localhost:9092
     consumer:
       group-id: activity-consumer-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+
       properties:
         spring:
+          deserializer:
+            key:
+              delegate:
+                class: org.apache.kafka.common.serialization.StringDeserializer
+            value:
+              delegate:
+                class: org.springframework.kafka.support.serializer.JsonDeserializer
           json:
             use:
               type:
                 headers: false
-            value:
-              default:
-                type: com.fitness.aiservice.models.Activity
+#            value:
+#              default:
+#                type: com.fitness.aiservice.models.Activity
             trusted:
               packages: "*"
 
 kafka:
   topic:
-    name: activity-events
+    activity-created: activity-created-events
+    activity-deleted: activity-deleted-events
 
 gemini:
   api:

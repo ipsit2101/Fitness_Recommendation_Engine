@@ -25,7 +25,8 @@ spring:
 
 kafka:
   topic:
-    name: activity-events
+    activity-created: activity-created-events
+    activity-deleted: activity-deleted-events
 
 
 eureka:

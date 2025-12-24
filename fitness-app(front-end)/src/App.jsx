@@ -45,7 +45,7 @@ function App() {
         {!token ? (
           <Login onLogin={() => {logIn()}} />
         ) : (
-         <Box component="section" sx={{ p: 2, m: 2 }}>
+        <Box component="section" sx={{ p: 2, m: 2 }}>
           <SignIn logOut={logOut} handleLogout={handleLogout} />
           <Routes key={ userId || "guest" }>
             <Route path="/activities" element={<ActivitiesPage />} />

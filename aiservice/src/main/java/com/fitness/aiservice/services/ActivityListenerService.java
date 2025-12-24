@@ -1,5 +1,6 @@
 package com.fitness.aiservice.services;
 
+import com.fitness.aiservice.dto.DeleteActivityEvent;
 import com.fitness.aiservice.models.Activity;
 import com.fitness.aiservice.models.Recommendation;
 import com.fitness.aiservice.repositories.RecommendationRepository;
@@ -18,14 +19,36 @@ public class ActivityListenerService {
     @Autowired
     private RecommendationRepository recommendationRepository;
 
-    @KafkaListener(topics = "${kafka.topic.name}", groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(
+            topics = "${kafka.topic.activity-created}",
+            groupId = "${spring.kafka.consumer.group-id}"
+    )
     public void processActivityMessage(Activity activity) {
-        log.info("Received Activity for processing for the user: {} -> {}", activity.getUserId(), activity);
+        log.info("Received Activity for processing for the user: {} -> {}",
+                activity.getUserId(), activity);
         Recommendation recommendation = activityResponseProcessingService.generateRecommendation(activity);
         if (recommendation != null) {
             recommendationRepository.save(recommendation);
-            log.info("Recommendation saved for the user {} with activity-id {}", recommendation.getUserId(),
+            log.info("Recommendation saved for the user {} with activity-id {}",
+                    recommendation.getUserId(),
                     recommendation.getActivityId());
         }
+    }
+
+    @KafkaListener(
+            topics = "${kafka.topic.activity-deleted}",
+            groupId = "${spring.kafka.consumer.group-id}"
+    )
+    public void deleteActivityMessage(DeleteActivityEvent deleteActivityEvent) {
+        log.info(
+                "Received ACTIVITY_DELETED event for activityId={}",
+                deleteActivityEvent.getActivityId()
+        );
+        recommendationRepository
+                .deleteRecommendationByActivityId(deleteActivityEvent.getActivityId());
+        log.info(
+                "Deleted recommendation for activityId: {}",
+                deleteActivityEvent.getActivityId()
+        );
     }
 }
