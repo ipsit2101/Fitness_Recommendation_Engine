@@ -21,7 +21,8 @@ public class ActivityListenerService {
 
     @KafkaListener(
             topics = "${kafka.topic.activity-created}",
-            groupId = "${spring.kafka.consumer.group-id}"
+            groupId = "${spring.kafka.consumer.group-id}",
+            containerFactory = "activityKafkaListenerContainerFactory"
     )
     public void processActivityMessage(Activity activity) {
         log.info("Received Activity for processing for the user: {} -> {}",
@@ -37,7 +38,8 @@ public class ActivityListenerService {
 
     @KafkaListener(
             topics = "${kafka.topic.activity-deleted}",
-            groupId = "${spring.kafka.consumer.group-id}"
+            groupId = "${spring.kafka.consumer.group-id}",
+            containerFactory = "deleteActivityKafkaListenerContainerFactory"
     )
     public void deleteActivityMessage(DeleteActivityEvent deleteActivityEvent) {
         log.info(

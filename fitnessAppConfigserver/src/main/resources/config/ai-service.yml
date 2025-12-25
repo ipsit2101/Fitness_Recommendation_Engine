@@ -8,6 +8,7 @@ spring:
     bootstrap-servers: localhost:9092
     consumer:
       group-id: activity-consumer-group
+      enable-auto-commit: false          #  manual acknowledgement
       auto-offset-reset: earliest
 
 #      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -24,15 +25,15 @@ spring:
             value:
               delegate:
                 class: org.springframework.kafka.support.serializer.JsonDeserializer
-          json:
-            use:
-              type:
-                headers: false
-#            value:
-#              default:
-#                type: com.fitness.aiservice.models.Activity
-            trusted:
-              packages: "*"
+#          json:
+#            use:
+#              type:
+#                headers: false
+##            value:
+##              default:
+##                type: com.fitness.aiservice.models.Activity
+#            trusted:
+#              packages: "*"
 
 kafka:
   topic:

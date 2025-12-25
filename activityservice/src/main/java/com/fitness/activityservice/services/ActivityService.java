@@ -146,7 +146,7 @@ public class ActivityService {
                     .deletedAt(LocalDateTime.now())
                     .build();
             delKafkaTemplate.send(deleteTopicName, activityId, event);
-            log.info("Published ACTIVITY_DELETED event for userId {} for activityId: {}", userId, activityId);
+            log.info("Published ACTIVITY_DELETED event for userId {} for activity: {}", userId, activity);
 
         } catch (Exception e) {
             log.error(e.toString());
