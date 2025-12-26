@@ -4,15 +4,20 @@ spring:
       uri: mongodb://localhost:27017/ai_recommendation_fitness
       database: ai_recommendation_fitness
 
+  cache:
+    type: redis
+
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
       group-id: activity-consumer-group
       enable-auto-commit: false          #  manual acknowledgement
       auto-offset-reset: earliest
-
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
 

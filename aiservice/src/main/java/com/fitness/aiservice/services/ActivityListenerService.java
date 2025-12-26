@@ -17,6 +17,9 @@ public class ActivityListenerService {
     private ActivityResponseProcessingService activityResponseProcessingService;
 
     @Autowired
+    private RecommendationService recommendationService;
+
+    @Autowired
     private RecommendationRepository recommendationRepository;
 
     @KafkaListener(
@@ -29,10 +32,7 @@ public class ActivityListenerService {
                 activity.getUserId(), activity);
         Recommendation recommendation = activityResponseProcessingService.generateRecommendation(activity);
         if (recommendation != null) {
-            recommendationRepository.save(recommendation);
-            log.info("Recommendation saved for the user {} with activity-id {}",
-                    recommendation.getUserId(),
-                    recommendation.getActivityId());
+            recommendationService.saveRecommendation(recommendation);
         }
     }
 
@@ -46,11 +46,6 @@ public class ActivityListenerService {
                 "Received ACTIVITY_DELETED event for activityId={}",
                 deleteActivityEvent.getActivityId()
         );
-        recommendationRepository
-                .deleteRecommendationByActivityId(deleteActivityEvent.getActivityId());
-        log.info(
-                "Deleted recommendation for activityId: {}",
-                deleteActivityEvent.getActivityId()
-        );
+        recommendationService.deleteRecommendation(deleteActivityEvent);
     }
 }

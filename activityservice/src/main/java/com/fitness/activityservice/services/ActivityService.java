@@ -45,7 +45,7 @@ public class ActivityService {
     @CacheEvict(
             value = "user-activities",
             key = "#activityRequest.userId",
-            beforeInvocation = false
+            beforeInvocation = false   // Evict only if transaction is successful :)
     )
     public ActivityResponse trackActivity(ActivityRequest activityRequest) {
 

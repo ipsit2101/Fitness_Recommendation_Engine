@@ -1,22 +1,37 @@
 package com.fitness.aiservice.services;
 
 import com.fitness.aiservice.dto.ActivityRecommendationDTO;
+import com.fitness.aiservice.dto.DeleteActivityEvent;
 import com.fitness.aiservice.dto.RecommendationDTO;
 import com.fitness.aiservice.models.Recommendation;
 import com.fitness.aiservice.repositories.RecommendationRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
-@RequiredArgsConstructor
 public class RecommendationService {
 
     @Autowired
     private RecommendationRepository recommendationRepository;
+
+    @Autowired
+    private RedisCachingService cachingService;
+
+    public void saveRecommendation(Recommendation recommendation) {
+        recommendationRepository.save(recommendation);
+        log.info("Recommendation saved for the user {} with activity-id {}",
+                recommendation.getUserId(),
+                recommendation.getActivityId());
+    }
+
+    public void deleteRecommendation(DeleteActivityEvent deleteActivityEvent) {
+        cachingService.deleteRecommendation(deleteActivityEvent);
+    }
     
     public List<ActivityRecommendationDTO> getUserRecommendations(String userId) {
 
@@ -29,9 +44,7 @@ public class RecommendationService {
     }
 
     public ActivityRecommendationDTO getActivityRecommendations(String activityId) {
-
-        Recommendation response = recommendationRepository.findRecommendationByActivityId(activityId)
-                .orElseThrow(() -> new RuntimeException("No recommendation found for the activity: " + activityId));
+        Recommendation response = cachingService.getRecommendationFromDB(activityId);
         return toDTO(response);
     }
 
