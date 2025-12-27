@@ -8,13 +8,12 @@ import com.fitness.activityservice.model.Activity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,9 @@ public class ActivityService {
     private UserValidationService userValidationService;
 
     @Autowired
+    private RedisCachingService cachingService;
+
+    @Autowired
     private KafkaTemplate<String, Activity> genKafkaTemplate;
 
     @Autowired
@@ -41,12 +43,9 @@ public class ActivityService {
     @Value("${kafka.topic.activity-deleted}")
     private String deleteTopicName;
 
+    private static final Duration CACHE_TTL = Duration.ofMinutes(10);
+
     @Transactional
-    @CacheEvict(
-            value = "user-activities",
-            key = "#activityRequest.userId",
-            beforeInvocation = false   // Evict only if transaction is successful :)
-    )
     public ActivityResponse trackActivity(ActivityRequest activityRequest) {
 
         boolean isValidUser = userValidationService.validateUser(activityRequest.getUserId());
@@ -67,6 +66,7 @@ public class ActivityService {
         log.info("Activity saved for the user {} : {}",activityRequest.getUserId(), savedaActivity);
 
         // CACHE EVICTION (EXPLICIT EVICTION POLICY)
+        cachingService.evict(getCacheKey(savedaActivity.getUserId()));
         log.info("CACHE EVICT -> Removing cached activities for the user-id: {}", savedaActivity.getUserId());
 
         try {
@@ -89,13 +89,15 @@ public class ActivityService {
                 .build();
     }
 
-    @Cacheable(
-            value = "user-activities",
-            key = "#userId"
-    )
     public List<ActivityResponse> getUserActivities(String userId) {
 
-        //CACHE MISS
+        String cacheKey = getCacheKey(userId);
+        List<ActivityResponse> cachedResponse = (List<ActivityResponse>) cachingService.get(cacheKey);
+        if (cachedResponse != null) {
+            return cachedResponse;
+        }
+
+        // DB FALLBACK
         log.info("CACHE MISS -> Fetching activity details of the user from DB: {}", userId);
         List<Activity> activities = activityRepository.findByUserId(userId);
         List<ActivityResponse> responseList = new ArrayList<>();
@@ -113,15 +115,11 @@ public class ActivityService {
                             .build()
             );
         }
+        cachingService.put(cacheKey, responseList, CACHE_TTL);
         return responseList;
     }
 
     @Transactional
-    @CacheEvict(
-            value = "user-activities",
-            key = "#userId",
-            beforeInvocation = false
-    )
     public void deleteActivity(String activityId, String userId) throws AccessDeniedException {
 
         boolean isValidUser = userValidationService.validateUser(userId);
@@ -138,6 +136,10 @@ public class ActivityService {
         activityRepository.deleteById(activityId);
         log.info("Activity {} deleted from DB", activityId);
 
+        // CACHE EVICT
+        cachingService.evict(getCacheKey(userId));
+        log.info("CACHE EVICT -> Removing cached activities for the userId: {}", userId);
+
         //publishing kafka event
         try {
             DeleteActivityEvent event = DeleteActivityEvent.builder()
@@ -151,5 +153,9 @@ public class ActivityService {
         } catch (Exception e) {
             log.error(e.toString());
         }
+    }
+
+    private String getCacheKey(String key) {
+        return "user-activities::" + key;
     }
 }

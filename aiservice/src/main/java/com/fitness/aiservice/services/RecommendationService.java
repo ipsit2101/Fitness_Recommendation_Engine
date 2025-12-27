@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,8 @@ public class RecommendationService {
 
     @Autowired
     private RecommendationRepository recommendationRepository;
+
+    private static final Duration CACHE_TTL = Duration.ofMinutes(10);
 
     @Autowired
     private RedisCachingService cachingService;
@@ -30,7 +33,15 @@ public class RecommendationService {
     }
 
     public void deleteRecommendation(DeleteActivityEvent deleteActivityEvent) {
-        cachingService.deleteRecommendation(deleteActivityEvent);
+        recommendationRepository
+                .deleteRecommendationByActivityId(deleteActivityEvent.getActivityId());
+
+        // CACHE EVICT
+        cachingService.evict(getCacheKey(deleteActivityEvent.getActivityId()));
+        log.info(
+                "CACHE EVICT -> Deleted recommendation for activityId: {}",
+                deleteActivityEvent.getActivityId()
+        );
     }
     
     public List<ActivityRecommendationDTO> getUserRecommendations(String userId) {
@@ -44,7 +55,17 @@ public class RecommendationService {
     }
 
     public ActivityRecommendationDTO getActivityRecommendations(String activityId) {
-        Recommendation response = cachingService.getRecommendationFromDB(activityId);
+
+        String cacheKey = getCacheKey(activityId);
+        Recommendation cachedResponse = cachingService.get(cacheKey, Recommendation.class); // response is null for now
+        if (cachedResponse != null) {
+            return toDTO(cachedResponse);
+        }
+
+        log.info("CACHE MISS -> Fetching recommendation for the activity from DB: {}", activityId);
+        Recommendation response = recommendationRepository.findRecommendationByActivityId(activityId)
+                .orElseThrow(() -> new RuntimeException("No recommendation found for the activity: " + activityId));
+        cachingService.put(cacheKey, response, CACHE_TTL);
         return toDTO(response);
     }
 
@@ -67,5 +88,9 @@ public class RecommendationService {
                                 .build()
                 )
                 .build();
+    }
+
+    String getCacheKey(String key) {
+        return "activity::recommendation::" + key;
     }
 }

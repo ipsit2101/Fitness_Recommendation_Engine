@@ -1,42 +1,50 @@
 package com.fitness.aiservice.services;
 
-import com.fitness.aiservice.dto.DeleteActivityEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fitness.aiservice.models.Recommendation;
-import com.fitness.aiservice.repositories.RecommendationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
 
 @Service
 @Slf4j
 public class RedisCachingService {
 
     @Autowired
-    private RecommendationRepository recommendationRepository;
+    private RedisTemplate<String, Object> redisTemplate;
 
-    @CacheEvict(
-            value = "activity-analysis",
-            key = "#deleteActivityEvent.activityId"
-    )
-    public void deleteRecommendation(DeleteActivityEvent deleteActivityEvent) {
-        recommendationRepository
-                .deleteRecommendationByActivityId(deleteActivityEvent.getActivityId());
-        log.info(
-                "CACHE EVICT -> Deleted recommendation for activityId: {}",
-                deleteActivityEvent.getActivityId()
-        );
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    public <T> T get(String key, Class<T> targetType) {
+        try {
+            Object cached = redisTemplate.opsForValue().get(key);
+            return mapper.convertValue(cached, targetType);
+        } catch (Exception ex) {
+            log.warn("Redis GET failed in ai-service, treating as cache miss. key: {}", key);
+            return null;
+        }
     }
 
-    @Cacheable(
-            value = "activity-analysis",
-            key = "#activityId",
-            unless = "#result == null"
-    )
-    public Recommendation getRecommendationFromDB(String activityId) {
-        log.info("CACHE MISS -> Fetching recommendation for the activity from DB: {}", activityId);
-        return recommendationRepository.findRecommendationByActivityId(activityId)
-                .orElseThrow(() -> new RuntimeException("No recommendation found for the activity: " + activityId));
+    /* ===================== PUT ===================== */
+
+    public void put(String key, Recommendation value, Duration ttl) {
+        try {
+            redisTemplate.opsForValue().set(key, value, ttl);
+        } catch (Exception ex) {
+            log.warn("Redis PUT failed in ai-service, skipping cache. key: {}", key);
+        }
+    }
+
+    /* ===================== EVICT ===================== */
+
+    public void evict(String key) {
+        try {
+            redisTemplate.delete(key);
+        } catch (Exception ex) {
+            log.warn("Redis EVICT failed in ai-service, ignoring. key: {}", key);
+        }
     }
 }
