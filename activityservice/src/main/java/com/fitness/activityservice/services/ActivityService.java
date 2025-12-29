@@ -91,7 +91,7 @@ public class ActivityService {
 
     public List<ActivityResponse> getUserActivities(String userId) {
 
-        String cacheKey = getCacheKey(userId);
+        String cacheKey = getCacheKey(userId); // PROBLEM ;- IF TTL IS EXPIRED THEN ALSO CALL IS GOING TO REDIS
         List<ActivityResponse> cachedResponse = (List<ActivityResponse>) cachingService.get(cacheKey);
         if (cachedResponse != null) {
             return cachedResponse;

@@ -4,13 +4,17 @@ spring:
       uri: mongodb://localhost:27017/ai_recommendation_fitness
       database: ai_recommendation_fitness
 
-  cache:
-    type: redis
-
   redis:
     host: localhost
     port: 6379
-    timeout: 2000
+    timeout: 100ms
+    lettuce:
+      shutdown-timeout: 100ms
+      pool:
+        max-wait: 100ms
+        test-on-borrow: true
+        test-on-return: true
+        time-between-eviction-runs: 5s
 
   kafka:
     bootstrap-servers: localhost:9092

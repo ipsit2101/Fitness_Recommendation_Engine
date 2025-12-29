@@ -37,7 +37,7 @@ public class RecommendationService {
                 .deleteRecommendationByActivityId(deleteActivityEvent.getActivityId());
 
         // CACHE EVICT
-        cachingService.evict(getCacheKey(deleteActivityEvent.getActivityId()));
+        cachingService.evictAsync(getCacheKey(deleteActivityEvent.getActivityId()));
         log.info(
                 "CACHE EVICT -> Deleted recommendation for activityId: {}",
                 deleteActivityEvent.getActivityId()
@@ -65,7 +65,8 @@ public class RecommendationService {
         log.info("CACHE MISS -> Fetching recommendation for the activity from DB: {}", activityId);
         Recommendation response = recommendationRepository.findRecommendationByActivityId(activityId)
                 .orElseThrow(() -> new RuntimeException("No recommendation found for the activity: " + activityId));
-        cachingService.put(cacheKey, response, CACHE_TTL);
+        log.info("DB response: {}", response.getActivityId());
+        cachingService.putAsync(cacheKey, response, CACHE_TTL);
         return toDTO(response);
     }
 
